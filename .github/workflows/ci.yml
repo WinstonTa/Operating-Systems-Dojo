@@ -1,0 +1,29 @@
+name: Verify
+on:
+  push:
+  pull_request:
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - run: npm run validate
+      - run: npm test
+      - run: npm run typecheck
+      - run: npm run build
+  linux-examples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile all C examples (do not run IPC demos automatically)
+        run: |
+          set -eu
+          for src in examples/*.c; do
+            cc -std=c11 -Wall -Wextra -Werror -pedantic -pthread "$src" -o "/tmp/$(basename "$src" .c)"
+          done
