@@ -1,0 +1,212 @@
+[
+  {
+    "id": "fork-return",
+    "lessonId": "process-creation",
+    "prompt": "Immediately after successful fork, what does the child receive as the return value?",
+    "options": [
+      "0",
+      "The parent PID",
+      "The new child PID"
+    ],
+    "answer": 0,
+    "hint": "A parent receives the child PID, not the child itself.",
+    "explanation": "The same fork call completes independently in both processes; the return value distinguishes paths.",
+    "sourceType": "Original practice",
+    "difficulty": "foundation"
+  },
+  {
+    "id": "fork-order",
+    "lessonId": "process-creation",
+    "prompt": "Which process executes the next user-space instruction first after fork?",
+    "options": [
+      "Always parent",
+      "Always child",
+      "Not guaranteed"
+    ],
+    "answer": 2,
+    "hint": "Consider scheduler decisions and multicore execution.",
+    "explanation": "Neither the parent nor child has a guaranteed first run without synchronization.",
+    "sourceType": "Original practice",
+    "difficulty": "foundation"
+  },
+  {
+    "id": "exit-handlers",
+    "lessonId": "process-termination",
+    "prompt": "What does _exit() skip compared with exit()?",
+    "options": [
+      "Kernel process cleanup",
+      "C library exit handlers and stdio flushing",
+      "Recording exit status"
+    ],
+    "answer": 1,
+    "hint": "Think about userspace rather than kernel cleanup.",
+    "explanation": "_exit() terminates the process immediately without the userspace teardown managed by exit().",
+    "sourceType": "Original practice",
+    "difficulty": "foundation"
+  },
+  {
+    "id": "wait-zombie",
+    "lessonId": "process-termination",
+    "prompt": "What reaps a terminated waitable child and obtains its status?",
+    "options": [
+      "wait()/waitpid() in the parent",
+      "execve() in the child",
+      "shmat() in the parent"
+    ],
+    "answer": 0,
+    "hint": "The parent is responsible for collecting child status.",
+    "explanation": "wait()/waitpid() retrieve child state and let the kernel release retained exit metadata.",
+    "sourceType": "Original practice",
+    "difficulty": "foundation"
+  },
+  {
+    "id": "exec-pid",
+    "lessonId": "program-execution",
+    "prompt": "What happens to the PID when execve() succeeds?",
+    "options": [
+      "It changes to a fresh PID",
+      "It remains the same",
+      "The process becomes a thread"
+    ],
+    "answer": 1,
+    "hint": "fork creates; exec replaces.",
+    "explanation": "execve() overlays the same process image and preserves PID.",
+    "sourceType": "Original practice",
+    "difficulty": "foundation"
+  },
+  {
+    "id": "cloexec",
+    "lessonId": "program-execution",
+    "prompt": "Which descriptor is automatically closed by successful execve()?",
+    "options": [
+      "Every open descriptor",
+      "A descriptor marked FD_CLOEXEC",
+      "Only standard output"
+    ],
+    "answer": 1,
+    "hint": "Check the descriptor flag, not its numeric value.",
+    "explanation": "The close-on-exec flag controls descriptor survival across successful exec.",
+    "sourceType": "Original practice",
+    "difficulty": "foundation"
+  },
+  {
+    "id": "sysv-block",
+    "lessonId": "sysv-semaphores",
+    "prompt": "Semaphore value is 0. A default semop(-1) is attempted. What happens?",
+    "options": [
+      "Semaphore becomes -1",
+      "Operation blocks",
+      "Operation always succeeds without change"
+    ],
+    "answer": 1,
+    "hint": "The count is nonnegative.",
+    "explanation": "A decrement cannot proceed if it would make the semaphore negative.",
+    "sourceType": "Original practice",
+    "difficulty": "foundation"
+  },
+  {
+    "id": "sysv-init",
+    "lessonId": "sysv-semaphores",
+    "prompt": "Why coordinate initialization after semget()?",
+    "options": [
+      "Creating and initializing are separate operations",
+      "All semaphore values are always 1",
+      "semop automatically initializes"
+    ],
+    "answer": 0,
+    "hint": "Consider racing processes opening the same set.",
+    "explanation": "System V set creation and semctl initialization are distinct; peers can observe an uninitialized protocol if coordination is absent.",
+    "sourceType": "Original practice",
+    "difficulty": "foundation"
+  },
+  {
+    "id": "sysv-visibility",
+    "lessonId": "sysv-shared-memory",
+    "prompt": "What does shmat() provide to two attaching processes?",
+    "options": [
+      "Guaranteed identical virtual addresses",
+      "Access to the same underlying segment",
+      "Automatic mutual exclusion"
+    ],
+    "answer": 1,
+    "hint": "Virtual addresses belong to each process.",
+    "explanation": "Attaching maps the same shared bytes; per-process addresses may differ.",
+    "sourceType": "Original practice",
+    "difficulty": "foundation"
+  },
+  {
+    "id": "sysv-sync",
+    "lessonId": "sysv-shared-memory",
+    "prompt": "What must coordinate concurrent reads/writes to shared memory?",
+    "options": [
+      "A semaphore or other synchronization mechanism",
+      "The shared memory segment alone",
+      "Matching virtual addresses"
+    ],
+    "answer": 0,
+    "hint": "Shared is not synonymous with synchronized.",
+    "explanation": "Shared memory makes bytes visible but cannot determine safe operation ordering.",
+    "sourceType": "Original practice",
+    "difficulty": "foundation"
+  },
+  {
+    "id": "posix-block",
+    "lessonId": "posix-semaphores",
+    "prompt": "What does a successful sem_post() do?",
+    "options": [
+      "Decrease the count",
+      "Increase the count and potentially wake a waiter",
+      "Delete the semaphore"
+    ],
+    "answer": 1,
+    "hint": "A post releases availability.",
+    "explanation": "sem_post increments the value and allows a waiting decrement to continue.",
+    "sourceType": "Original practice",
+    "difficulty": "foundation"
+  },
+  {
+    "id": "posix-unlink",
+    "lessonId": "posix-semaphores",
+    "prompt": "What is the main purpose of sem_unlink()?",
+    "options": [
+      "Remove the semaphore's name",
+      "Immediately terminate all attached processes",
+      "Reset it to 0"
+    ],
+    "answer": 0,
+    "hint": "Compare close vs unlink.",
+    "explanation": "sem_close releases an open handle; sem_unlink removes a named semaphore name.",
+    "sourceType": "Original practice",
+    "difficulty": "foundation"
+  },
+  {
+    "id": "posix-size",
+    "lessonId": "posix-shared-memory",
+    "prompt": "What call sets the shared memory object's size before mmap access?",
+    "options": [
+      "sem_wait()",
+      "ftruncate()",
+      "waitpid()"
+    ],
+    "answer": 1,
+    "hint": "Opening a new object does not give a usable length automatically.",
+    "explanation": "ftruncate sets a backing object's size; mapping/reading beyond available backing is invalid.",
+    "sourceType": "Original practice",
+    "difficulty": "foundation"
+  },
+  {
+    "id": "posix-lifecycle",
+    "lessonId": "posix-shared-memory",
+    "prompt": "After shm_unlink(), what happens to an already established mapping?",
+    "options": [
+      "It remains until unmapped",
+      "It is immediately wiped from every process",
+      "It creates a new name"
+    ],
+    "answer": 0,
+    "hint": "Think of unlinking the name separately from reference lifetime.",
+    "explanation": "Removing the name prevents future name lookup but existing mappings can persist.",
+    "sourceType": "Original practice",
+    "difficulty": "foundation"
+  }
+]

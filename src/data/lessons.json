@@ -1,0 +1,213 @@
+[
+  {
+    "id": "process-creation",
+    "unit": "24",
+    "title": "Process creation",
+    "eyebrow": "Fork, file descriptors and scheduling",
+    "source": "24 - Process Creation.md",
+    "refs": [
+      "24.1",
+      "24.2",
+      "24.4",
+      "24.5"
+    ],
+    "objective": "Predict parent/child state and explain why fork returns twice.",
+    "concept": "fork() creates a new child with its own address space and a new PID. Both resume after the call, but parent and child observe different return values. Scheduling order is not guaranteed.",
+    "takeaways": [
+      "The parent receives the child's PID; the child receives 0.",
+      "The child's memory is logically distinct, typically implemented by copy-on-write.",
+      "Duplicated file descriptors refer to the same underlying open-file description and may share offsets."
+    ],
+    "example": "A parent calls fork(), then both processes print their own return value. Neither execution order is guaranteed.",
+    "prediction": "After fork(), does the child have the same PID as its parent?",
+    "answer": "No. The child has a distinct PID; fork returns 0 to the child and a positive child PID to the parent.",
+    "lab": "Press fork, then schedule parent or child. Observe separate memory and differing fork results.",
+    "challengeIds": [
+      "fork-return",
+      "fork-order"
+    ],
+    "sample": "fork_wait.c"
+  },
+  {
+    "id": "process-termination",
+    "unit": "25",
+    "title": "Process termination",
+    "eyebrow": "Exit status, cleanup and waiting",
+    "source": "25 - Process Termination.md",
+    "refs": [
+      "25.1",
+      "25.2",
+      "25.3",
+      "25.4"
+    ],
+    "objective": "Distinguish exit() and _exit() and interpret parent wait behavior.",
+    "concept": "exit() performs C library shutdown, invokes registered exit handlers, and flushes stdio streams before terminating. _exit() ends the process without running these userspace steps. The kernel records termination status until the parent reaps a waitable child.",
+    "takeaways": [
+      "exit() flushes stdio and invokes atexit handlers; _exit() does not.",
+      "wait()/waitpid() let a parent obtain child termination status.",
+      "A terminated child may remain a zombie until reaped."
+    ],
+    "example": "If stdio contains buffered text at fork, both parent and child can flush copied buffers when calling exit().",
+    "prediction": "Will a child calling _exit(7) run its parent's inherited atexit handler?",
+    "answer": "No. _exit() bypasses the C library's registered exit handlers and stdio flushing.",
+    "lab": "Terminate the simulated child; use wait to observe parent reaping its status.",
+    "challengeIds": [
+      "exit-handlers",
+      "wait-zombie"
+    ],
+    "sample": "exit_vs__exit.c"
+  },
+  {
+    "id": "program-execution",
+    "unit": "27",
+    "title": "Program execution",
+    "eyebrow": "execve and process image replacement",
+    "source": "27 - Program Execution.md",
+    "refs": [
+      "27.1",
+      "27.2",
+      "27.3",
+      "27.4",
+      "27.5"
+    ],
+    "objective": "Explain which process properties survive execve and how arguments/environment are passed.",
+    "concept": "execve() replaces the current process image with a new program; it does not spawn a new PID. argv and envp establish startup inputs. File descriptors normally survive unless close-on-exec is set.",
+    "takeaways": [
+      "A successful execve never returns to its old code.",
+      "The PID is preserved; the old code, data, heap and stack are replaced.",
+      "FD_CLOEXEC closes selected descriptors upon successful exec."
+    ],
+    "example": "A forked child can call execve('/bin/echo', argv, envp) while the parent waits for that child's exit.",
+    "prediction": "If a process execs /bin/echo, does exec create a separate child?",
+    "answer": "No. exec replaces the same process; fork is the operation that creates a new process.",
+    "lab": "Switch the simulated process image from program A to B while keeping its PID.",
+    "challengeIds": [
+      "exec-pid",
+      "cloexec"
+    ],
+    "sample": "exec_demo.c"
+  },
+  {
+    "id": "sysv-semaphores",
+    "unit": "47",
+    "title": "System V semaphores",
+    "eyebrow": "Atomic operations and blocked processes",
+    "source": "47 - System V Semaphores.md",
+    "refs": [
+      "47.1",
+      "47.2",
+      "47.3",
+      "47.5",
+      "47.6",
+      "47.7",
+      "47.8"
+    ],
+    "objective": "Trace semop decrement, blocking, release and IPC object lifecycle.",
+    "concept": "A System V semaphore is a kernel-managed nonnegative integer in a set. semop() changes values atomically; a decrement that cannot proceed without going negative blocks by default. The creator must coordinate initialization and cleanup.",
+    "takeaways": [
+      "semget() obtains a set; semctl() initializes or removes it.",
+      "A negative sem_op waits until the full decrement is possible.",
+      "SEM_UNDO can adjust values after process exit, but isn't a general substitute for correct synchronization."
+    ],
+    "example": "Starting at 0, an attempt to decrement by 1 blocks. A peer's +1 operation allows the blocked decrement to finish.",
+    "prediction": "With semaphore value 0, can semop(-1) simply produce -1?",
+    "answer": "No. The operation blocks by default; the semaphore is not allowed to become negative.",
+    "lab": "Choose wait(-1) or post(+1), and inspect blocked process queues.",
+    "challengeIds": [
+      "sysv-block",
+      "sysv-init"
+    ],
+    "sample": "sysv_sem.c"
+  },
+  {
+    "id": "sysv-shared-memory",
+    "unit": "48",
+    "title": "System V shared memory",
+    "eyebrow": "Attachment, visibility and races",
+    "source": "48 - System V Shared Memory.md",
+    "refs": [
+      "48.1",
+      "48.2",
+      "48.3",
+      "48.4",
+      "48.6",
+      "48.7"
+    ],
+    "objective": "Understand shmat/shmdt, visibility and why coordination is necessary.",
+    "concept": "shmget() creates/opens a shared segment, and shmat() attaches it into a process address space. Different processes may map the same underlying bytes at different virtual addresses. Shared memory carries data but does not guarantee ordered or race-free access.",
+    "takeaways": [
+      "shmat() maps the same shared storage into different processes.",
+      "Pointers stored directly in shared memory may be invalid in other processes; offsets are safer.",
+      "Use synchronization to coordinate writers/readers; IPC_RMID marks a segment for deletion."
+    ],
+    "example": "One process writes a counter in an attached segment; another attached process observes the new value if access is properly synchronized.",
+    "prediction": "Do two processes attaching the same segment necessarily get the same virtual address?",
+    "answer": "No. Mappings can be at different virtual addresses, even though the underlying bytes are shared.",
+    "lab": "Attach a writer and reader, update a shared counter and observe visibility.",
+    "challengeIds": [
+      "sysv-visibility",
+      "sysv-sync"
+    ],
+    "sample": "sysv_shm.c"
+  },
+  {
+    "id": "posix-semaphores",
+    "unit": "53",
+    "title": "POSIX semaphores",
+    "eyebrow": "Named and unnamed synchronization",
+    "source": "53 - POSIX Semaphores.md",
+    "refs": [
+      "53.1",
+      "53.2",
+      "53.3",
+      "53.4",
+      "53.5"
+    ],
+    "objective": "Use sem_wait/sem_post and distinguish named from unnamed POSIX semaphores.",
+    "concept": "POSIX semaphores offer a simpler interface: sem_open() opens a named semaphore, sem_wait() decrements or blocks, and sem_post() increments. Unnamed semaphores use sem_init() and can be shared across processes when placed in shared memory with pshared enabled.",
+    "takeaways": [
+      "sem_wait() blocks at zero; sem_post() increments and may release a waiter.",
+      "sem_close() removes a process handle; sem_unlink() removes the name.",
+      "An unnamed semaphore intended for interprocess use must reside in shared memory."
+    ],
+    "example": "A producer posts when an item is ready; a consumer waiting at zero then proceeds.",
+    "prediction": "If the semaphore is zero, does sem_wait() return success immediately?",
+    "answer": "No. It waits until the semaphore can be decremented (unless interrupted or using a nonblocking/timed variant).",
+    "lab": "Step through consumer waits and producer posts while tracking the count.",
+    "challengeIds": [
+      "posix-block",
+      "posix-unlink"
+    ],
+    "sample": "posix_sem.c"
+  },
+  {
+    "id": "posix-shared-memory",
+    "unit": "54",
+    "title": "POSIX shared memory",
+    "eyebrow": "Objects, mappings and unlinking",
+    "source": "54 - POSIX Shared Memory.md",
+    "refs": [
+      "54.1",
+      "54.2",
+      "54.3",
+      "54.4",
+      "54.5"
+    ],
+    "objective": "Sequence shm_open, sizing, mmap, and unlinking with correct lifecycle semantics.",
+    "concept": "POSIX shared memory starts as an object opened with shm_open(). After setting its size with ftruncate(), applications map it using mmap(MAP_SHARED). Unlink removes the object name while existing mappings may remain usable until released.",
+    "takeaways": [
+      "shm_open() returns a file descriptor for a shared memory object.",
+      "Set a usable size via ftruncate() before accessing the intended range.",
+      "shm_unlink() removes the name; existing mappings can outlive the name."
+    ],
+    "example": "The writer creates /dojo_demo, sizes it to a page, maps it, and writes an integer. Another process opens/maps the same named object.",
+    "prediction": "Will shm_unlink() immediately unmap the memory of another process?",
+    "answer": "No. Unlink removes the name; existing mappings are independently released using munmap().",
+    "lab": "Create, size, map, write, and unlink a simulated POSIX shared object.",
+    "challengeIds": [
+      "posix-size",
+      "posix-lifecycle"
+    ],
+    "sample": "posix_shm.c"
+  }
+]
