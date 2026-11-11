@@ -208,5 +208,365 @@
     "explanation": "Removing the name prevents future name lookup but existing mappings can persist.",
     "sourceType": "Original practice",
     "difficulty": "foundation"
+  },
+  {
+    "id": "address-spaces-a",
+    "lessonId": "address-spaces",
+    "difficulty": "foundation",
+    "prompt": "Same virtual address in two independent processes means…",
+    "options": [
+      "Same physical cell",
+      "Different or shared physical cell depending on mappings",
+      "A mandatory page fault"
+    ],
+    "answer": 1,
+    "hint": "Translations belong to each process.",
+    "explanation": "The virtual number alone does not identify physical storage.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "address-spaces-b",
+    "lessonId": "address-spaces",
+    "difficulty": "foundation",
+    "prompt": "What prevents arbitrary access to another process's memory?",
+    "options": [
+      "Process page permissions and OS/hardware checks",
+      "Using a larger pointer",
+      "A faster CPU"
+    ],
+    "answer": 0,
+    "hint": "Consider protection.",
+    "explanation": "Hardware-enforced address translation and permissions restrict access.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "base-bounds-a",
+    "lessonId": "base-bounds",
+    "difficulty": "foundation",
+    "prompt": "Base 1000, bound 256, virtual 120. Physical address?",
+    "options": [
+      "1120",
+      "880",
+      "256"
+    ],
+    "answer": 0,
+    "hint": "Add only after validation.",
+    "explanation": "1000 + 120 = 1120.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "base-bounds-b",
+    "lessonId": "base-bounds",
+    "difficulty": "foundation",
+    "prompt": "With bound 256, virtual 300 produces…",
+    "options": [
+      "1300",
+      "A protection fault",
+      "A wrapping address"
+    ],
+    "answer": 1,
+    "hint": "The bound is a limit.",
+    "explanation": "The MMU rejects invalid virtual references.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "segmentation-a",
+    "lessonId": "segmentation",
+    "difficulty": "foundation",
+    "prompt": "Code segment base 2000, offset 20. Physical?",
+    "options": [
+      "2020",
+      "1980",
+      "20"
+    ],
+    "answer": 0,
+    "hint": "Use this segment's base.",
+    "explanation": "2000 + 20 = 2020.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "segmentation-b",
+    "lessonId": "segmentation",
+    "difficulty": "foundation",
+    "prompt": "What is a classic weakness of variable-size segmentation?",
+    "options": [
+      "External fragmentation",
+      "Compulsory fixed page size",
+      "No protection bits"
+    ],
+    "answer": 0,
+    "hint": "Consider holes between allocated regions.",
+    "explanation": "Segments need variable contiguous placements.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "free-space-a",
+    "lessonId": "free-space",
+    "difficulty": "foundation",
+    "prompt": "Free holes [8,8], request 12. What happens?",
+    "options": [
+      "Succeeds using both holes",
+      "Fails without contiguous capacity",
+      "Always compacts automatically"
+    ],
+    "answer": 1,
+    "hint": "Allocation requires one suitable hole.",
+    "explanation": "Nonadjacent free blocks cannot satisfy a contiguous request.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "free-space-b",
+    "lessonId": "free-space",
+    "difficulty": "foundation",
+    "prompt": "When can two free blocks be coalesced?",
+    "options": [
+      "When adjacent in memory",
+      "Whenever equal size",
+      "Only after a reboot"
+    ],
+    "answer": 0,
+    "hint": "Think about their addresses.",
+    "explanation": "Only adjacent regions can merge into a larger contiguous hole.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "paging-a",
+    "lessonId": "paging",
+    "difficulty": "foundation",
+    "prompt": "With 16-byte pages, virtual address 21 has VPN and offset…",
+    "options": [
+      "VPN 1, offset 5",
+      "VPN 5, offset 1",
+      "VPN 0, offset 21"
+    ],
+    "answer": 0,
+    "hint": "Use division and remainder.",
+    "explanation": "21 = 1×16 + 5.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "paging-b",
+    "lessonId": "paging",
+    "difficulty": "foundation",
+    "prompt": "What survives address translation unchanged?",
+    "options": [
+      "Page offset",
+      "Page number",
+      "Entire address"
+    ],
+    "answer": 0,
+    "hint": "Frames and pages have the same size.",
+    "explanation": "Only the virtual page number changes to a frame number.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "tlb-a",
+    "lessonId": "tlb",
+    "difficulty": "foundation",
+    "prompt": "A TLB miss indicates…",
+    "options": [
+      "Translation absent from cache",
+      "Page absent from RAM",
+      "Process crashed"
+    ],
+    "answer": 0,
+    "hint": "Separate translation caching from residency.",
+    "explanation": "Page tables may still contain a valid resident mapping.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "tlb-b",
+    "lessonId": "tlb",
+    "difficulty": "foundation",
+    "prompt": "Repeated access to a cached VPN is usually…",
+    "options": [
+      "A hit",
+      "A mandatory page fault",
+      "A forced disk access"
+    ],
+    "answer": 0,
+    "hint": "Consider temporal locality.",
+    "explanation": "A cached translation can serve repeated access.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "small-page-tables-a",
+    "lessonId": "small-page-tables",
+    "difficulty": "foundation",
+    "prompt": "Multi-level page tables save memory mainly when…",
+    "options": [
+      "Address spaces are sparse",
+      "All possible pages are mapped",
+      "Every page table entry is dirty"
+    ],
+    "answer": 0,
+    "hint": "Think unused regions.",
+    "explanation": "Omitted lower-level tables save space for unused virtual address ranges.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "small-page-tables-b",
+    "lessonId": "small-page-tables",
+    "difficulty": "foundation",
+    "prompt": "Main tradeoff of more levels on TLB miss?",
+    "options": [
+      "Potentially more memory references",
+      "No permission checks",
+      "No need for page tables"
+    ],
+    "answer": 0,
+    "hint": "Each additional level must be followed.",
+    "explanation": "More levels can increase translation-walk cost.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "swapping-a",
+    "lessonId": "swapping",
+    "difficulty": "foundation",
+    "prompt": "Accessing a valid nonresident page triggers…",
+    "options": [
+      "Page fault handling",
+      "Automatic silent CPU-register change with no trap",
+      "A guaranteed program crash"
+    ],
+    "answer": 0,
+    "hint": "Demand paging is intentional.",
+    "explanation": "The kernel services a valid nonresident page fault.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "swapping-b",
+    "lessonId": "swapping",
+    "difficulty": "foundation",
+    "prompt": "When all frames are occupied, a page-in may require…",
+    "options": [
+      "Victim page selection",
+      "Creating more physical RAM by fiat",
+      "Increasing the process PID"
+    ],
+    "answer": 0,
+    "hint": "Free a frame first.",
+    "explanation": "The OS can evict a page and then load the requested one.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "replacement-a",
+    "lessonId": "replacement",
+    "difficulty": "foundation",
+    "prompt": "Frames inserted A,B,C, A accessed again. FIFO victim?",
+    "options": [
+      "A",
+      "B",
+      "C"
+    ],
+    "answer": 0,
+    "hint": "FIFO tracks insertion.",
+    "explanation": "A remains oldest by insertion time.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "replacement-b",
+    "lessonId": "replacement",
+    "difficulty": "foundation",
+    "prompt": "Same trace. LRU victim?",
+    "options": [
+      "B",
+      "A",
+      "C"
+    ],
+    "answer": 0,
+    "hint": "A was just used.",
+    "explanation": "B has the longest time since reference.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "files-directories-a",
+    "lessonId": "files-directories",
+    "difficulty": "foundation",
+    "prompt": "dup(fd) usually creates…",
+    "options": [
+      "Another descriptor to same open file description",
+      "An independent duplicate file on disk",
+      "A process"
+    ],
+    "answer": 0,
+    "hint": "Look beyond the descriptor integer.",
+    "explanation": "Both descriptors share the underlying open-file description.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "files-directories-b",
+    "lessonId": "files-directories",
+    "difficulty": "foundation",
+    "prompt": "A hard link to a file refers to…",
+    "options": [
+      "Same inode-like object",
+      "A stored target pathname",
+      "New independent file data"
+    ],
+    "answer": 0,
+    "hint": "Hard and symbolic links differ.",
+    "explanation": "Hard links identify the same file object, while symlinks store path text.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "file-system-implementation-a",
+    "lessonId": "file-system-implementation",
+    "difficulty": "foundation",
+    "prompt": "In a UNIX-style file system, directory entries commonly map…",
+    "options": [
+      "Names to inode numbers",
+      "Names to CPU registers",
+      "Offsets to swap slots"
+    ],
+    "answer": 0,
+    "hint": "Directories are name indexes.",
+    "explanation": "The directory maps the human-visible name to its file record.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "file-system-implementation-b",
+    "lessonId": "file-system-implementation",
+    "difficulty": "foundation",
+    "prompt": "Which data structure typically tracks free data blocks?",
+    "options": [
+      "Allocation bitmap or free list",
+      "A file extension string",
+      "The TLB"
+    ],
+    "answer": 0,
+    "hint": "Think on-disk allocation.",
+    "explanation": "An allocator must record which disk blocks remain free.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "fast-file-system-a",
+    "lessonId": "fast-file-system",
+    "difficulty": "foundation",
+    "prompt": "Primary motivation for cylinder groups in classic FFS?",
+    "options": [
+      "Reduce disk seeks via locality",
+      "Change virtual addresses",
+      "Replace semaphores"
+    ],
+    "answer": 0,
+    "hint": "Think moving disk heads.",
+    "explanation": "Grouping related metadata and data reduces seek overhead on rotating disks.",
+    "sourceType": "Original practice"
+  },
+  {
+    "id": "fast-file-system-b",
+    "lessonId": "fast-file-system",
+    "difficulty": "foundation",
+    "prompt": "Does the classic mechanical-disk FFS locality argument apply unchanged to every SSD?",
+    "options": [
+      "No, SSD performance characteristics differ",
+      "Yes, all disks have moving heads",
+      "No file system has locality effects"
+    ],
+    "answer": 0,
+    "hint": "Different media have different costs.",
+    "explanation": "Locality still can matter, but spinning-disk seek costs do not transfer directly.",
+    "sourceType": "Original practice"
   }
 ]

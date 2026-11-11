@@ -1,5 +1,278 @@
 [
   {
+    "id": "address-spaces",
+    "unit": "13",
+    "title": "Address spaces",
+    "eyebrow": "Virtual addresses, isolation and transparency",
+    "source": "vm-intro.md",
+    "refs": [
+      "13.2",
+      "13.3",
+      "13.4"
+    ],
+    "objective": "Explain why each process can experience a private address space even while sharing physical RAM.",
+    "concept": "An address space is each process's view of code, heap, stack and other mapped regions. Virtual addresses are not physical locations; hardware and the OS cooperate to isolate processes.",
+    "example": "Two processes can use the same numeric virtual address while referring to distinct physical bytes.",
+    "prediction": "Does sharing the same virtual address imply two processes can read each other's bytes?",
+    "answer": "No. Each process has separate translation and protection state; equal virtual addresses need not refer to equal physical addresses.",
+    "lab": "Switch active processes and observe that virtual address 0x20 maps to different physical regions.",
+    "takeaways": [
+      "A private address space is an abstraction, not a dedicated physical RAM device.",
+      "Isolation relies on translations and permission enforcement.",
+      "Virtual memory supports flexible placement and protection."
+    ],
+    "challengeIds": [
+      "address-spaces-a",
+      "address-spaces-b"
+    ],
+    "sample": null,
+    "sourceType": "Course-derived / paraphrased"
+  },
+  {
+    "id": "base-bounds",
+    "unit": "15",
+    "title": "Address translation",
+    "eyebrow": "Base, bounds and protection",
+    "source": "vm-mechanism.md",
+    "refs": [
+      "15.2",
+      "15.3",
+      "15.5"
+    ],
+    "objective": "Calculate a physical address from a valid virtual address, and recognize bounds faults.",
+    "concept": "With dynamic relocation, the MMU checks a virtual address against a limit before adding a base register. The process can be relocated without changing its compiled addresses.",
+    "example": "With base 1000 and bound 256, virtual 120 maps to physical 1120; virtual 300 is invalid.",
+    "prediction": "If the virtual address is greater than or equal to the bound, should the base still be added?",
+    "answer": "No. The access traps for being out of range; it cannot touch another process's memory.",
+    "lab": "Try a valid address and an out-of-bounds address; inspect the translation result.",
+    "takeaways": [
+      "Physical = base + virtual when 0 ≤ virtual < bound.",
+      "Base and bounds are changed by privileged OS operations.",
+      "An invalid memory reference must trap instead of translating."
+    ],
+    "challengeIds": [
+      "base-bounds-a",
+      "base-bounds-b"
+    ],
+    "sample": null,
+    "sourceType": "Course-derived / paraphrased"
+  },
+  {
+    "id": "segmentation",
+    "unit": "16",
+    "title": "Segmentation",
+    "eyebrow": "Logical regions and external fragmentation",
+    "source": "vm-segmentation.md",
+    "refs": [
+      "16.1",
+      "16.2",
+      "16.3",
+      "16.4",
+      "16.6"
+    ],
+    "objective": "Distinguish segments from pages and reason about segment base, bounds and sharing.",
+    "concept": "Segmentation divides a process into variably sized logical regions such as code, heap, and stack. Each segment can be located independently, but physical free space can become externally fragmented.",
+    "example": "A 64-byte code segment mapped at base 2000 can translate code offset 20 to physical 2020.",
+    "prediction": "Why can segmentation waste less internal space yet cause external fragmentation?",
+    "answer": "Because regions are sized to their uses but must occupy suitably large contiguous physical holes.",
+    "lab": "Select code, heap or invalid gaps and inspect segment-specific translations.",
+    "takeaways": [
+      "Segment selection plus offset identify the translation.",
+      "Each segment has independent protection and bounds.",
+      "Variable-size physical allocations can leave unusable holes."
+    ],
+    "challengeIds": [
+      "segmentation-a",
+      "segmentation-b"
+    ],
+    "sample": null,
+    "sourceType": "Course-derived / paraphrased"
+  },
+  {
+    "id": "free-space",
+    "unit": "17",
+    "title": "Free-space management",
+    "eyebrow": "Splitting, coalescing, allocation strategies",
+    "source": "vm-freespace.md",
+    "refs": [
+      "17.2",
+      "17.3",
+      "17.4"
+    ],
+    "objective": "Predict first-fit behavior and why allocation fails despite enough total free memory.",
+    "concept": "A variable-sized memory allocator must find a suitable free region, split it when allocating, and coalesce neighbors when freed. First fit and best fit choose different holes, but neither eliminates external fragmentation.",
+    "example": "Free holes of 8 and 8 bytes cannot satisfy a request of 12 bytes unless they are adjacent and coalesced.",
+    "prediction": "If two nonadjacent holes each hold 8 bytes, can a single 12-byte allocation succeed?",
+    "answer": "Not without a contiguous 12-byte hole. Aggregate free capacity does not guarantee allocation success.",
+    "lab": "Allocate from example free holes; compare a failed large request with leftover capacity.",
+    "takeaways": [
+      "External fragmentation means free capacity is in separate holes.",
+      "Splitting makes residual holes; coalescing merges adjacent holes.",
+      "Allocation policies balance speed and fragmentation patterns."
+    ],
+    "challengeIds": [
+      "free-space-a",
+      "free-space-b"
+    ],
+    "sample": null,
+    "sourceType": "Course-derived / paraphrased"
+  },
+  {
+    "id": "paging",
+    "unit": "18",
+    "title": "Paging",
+    "eyebrow": "VPNs, offsets, page tables and frames",
+    "source": "vm-paging.md",
+    "refs": [
+      "18.1",
+      "18.2",
+      "18.3",
+      "18.4"
+    ],
+    "objective": "Translate a virtual address using a page number, offset and page-frame mapping.",
+    "concept": "Paging partitions virtual memory into fixed-size pages and physical memory into same-sized frames. The low address bits encode offset; the high bits select the virtual page number and its mapped physical frame.",
+    "example": "Using 16-byte pages, virtual 21 is VPN 1 with offset 5. If VPN 1 maps to frame 7, physical address = 7×16 + 5 = 117.",
+    "prediction": "For a page translation, should the page offset change?",
+    "answer": "No. Translation substitutes a physical frame number for the virtual page number while preserving the offset.",
+    "lab": "Translate sample virtual addresses using a visible mapping table.",
+    "takeaways": [
+      "VPN = floor(virtual address / page size).",
+      "Offset = virtual address modulo page size.",
+      "Physical address = frame × page size + offset if mapping is valid."
+    ],
+    "challengeIds": [
+      "paging-a",
+      "paging-b"
+    ],
+    "sample": null,
+    "sourceType": "Course-derived / paraphrased"
+  },
+  {
+    "id": "tlb",
+    "unit": "19",
+    "title": "Translation lookaside buffers",
+    "eyebrow": "TLB hits, misses and context switches",
+    "source": "vm-tlbs.md",
+    "refs": [
+      "19.1",
+      "19.2",
+      "19.3",
+      "19.4",
+      "19.5",
+      "19.6"
+    ],
+    "objective": "Explain why cached address translations accelerate repeated accesses.",
+    "concept": "A TLB is a small hardware cache of recently used virtual-to-physical translations. A hit avoids walking page tables; a miss triggers a translation lookup, and context switches must prevent confusing entries from different address spaces.",
+    "example": "The first access to VPN 2 may miss, but repeating VPN 2 can hit if its translation remains cached.",
+    "prediction": "Does a TLB miss necessarily mean the requested page is absent from RAM?",
+    "answer": "No. It may simply mean the translation is not currently in the TLB; a page-table walk can succeed.",
+    "lab": "Access repeated and new virtual pages to watch hit/miss counters.",
+    "takeaways": [
+      "TLB hits avoid extra page-table accesses.",
+      "TLB misses are distinct from page faults.",
+      "ASIDs or invalidation handle stale mappings across process changes."
+    ],
+    "challengeIds": [
+      "tlb-a",
+      "tlb-b"
+    ],
+    "sample": null,
+    "sourceType": "Course-derived / paraphrased"
+  },
+  {
+    "id": "small-page-tables",
+    "unit": "20",
+    "title": "Smaller page tables",
+    "eyebrow": "Multi-level tables and sparse address spaces",
+    "source": "vm-smalltables.md",
+    "refs": [
+      "20.1",
+      "20.2",
+      "20.3",
+      "20.4"
+    ],
+    "objective": "Explain how page-table allocation adapts to sparse mapped regions.",
+    "concept": "A flat page table reserves an entry for every virtual page even when most are unused. Multi-level tables allocate lower-level table pages only for populated address ranges, trading space for extra translation steps on a miss.",
+    "example": "A sparse process using only a few pages may need far fewer allocated second-level tables than a fully populated linear table.",
+    "prediction": "Do multi-level tables always need a leaf table for every possible virtual page?",
+    "answer": "No. Entire unused address regions can lack lower-level tables.",
+    "lab": "Add mappings to two virtual regions; see how many leaf tables are needed.",
+    "takeaways": [
+      "Multi-level structures are useful for sparse address spaces.",
+      "Larger pages shrink tables but may waste data-frame space.",
+      "TLBs cache final translations despite multi-step page-table walks."
+    ],
+    "challengeIds": [
+      "small-page-tables-a",
+      "small-page-tables-b"
+    ],
+    "sample": null,
+    "sourceType": "Course-derived / paraphrased"
+  },
+  {
+    "id": "swapping",
+    "unit": "21",
+    "title": "Beyond physical memory",
+    "eyebrow": "Page faults, swap, and residency",
+    "source": "vm-beyondphys.md",
+    "refs": [
+      "21.1",
+      "21.2",
+      "21.3",
+      "21.4",
+      "21.5"
+    ],
+    "objective": "Trace the steps taken when a referenced page is not in physical memory.",
+    "concept": "The OS can keep only active virtual pages in RAM and place other pages in backing storage. Accessing a valid but nonresident page triggers a page fault; the kernel loads it, possibly selecting a victim if frames are full.",
+    "example": "When page C is nonresident and RAM holds A and B, accessing C faults; a frame must be freed before C can be loaded.",
+    "prediction": "Does every page fault indicate invalid code or memory corruption?",
+    "answer": "No. A page fault can be a normal part of demand paging; protection faults are different.",
+    "lab": "Trigger a fault, evict a resident page and complete the load.",
+    "takeaways": [
+      "A present bit identifies resident versus nonresident mappings.",
+      "Page faults may require disk I/O and replacement.",
+      "Backing store provides capacity, not the speed of RAM."
+    ],
+    "challengeIds": [
+      "swapping-a",
+      "swapping-b"
+    ],
+    "sample": null,
+    "sourceType": "Course-derived / paraphrased"
+  },
+  {
+    "id": "replacement",
+    "unit": "22",
+    "title": "Page replacement policies",
+    "eyebrow": "FIFO, LRU, and Belady-style corner cases",
+    "source": "vm-beyondphys-policy.md",
+    "refs": [
+      "22.2",
+      "22.3",
+      "22.5",
+      "22.6",
+      "22.8",
+      "22.11"
+    ],
+    "objective": "Compare FIFO and LRU victims on the same reference sequence.",
+    "concept": "When RAM is full, a replacement policy chooses a resident page to evict. FIFO chooses the oldest insertion, while LRU chooses the page least recently referenced; different access patterns favor different policies.",
+    "example": "With A,B,C loaded in that order, then A accessed again, FIFO still evicts A on the next miss, while LRU evicts B.",
+    "prediction": "After re-accessing A, will FIFO and LRU necessarily pick the same victim?",
+    "answer": "No. Re-access changes recency but not FIFO insertion order; they may choose different pages.",
+    "lab": "Mark A recently used and compare FIFO versus LRU eviction of A or B.",
+    "takeaways": [
+      "FIFO ignores recent use when selecting oldest insertion.",
+      "LRU exploits temporal locality but has implementation overhead.",
+      "No practical policy is uniformly optimal over all traces."
+    ],
+    "challengeIds": [
+      "replacement-a",
+      "replacement-b"
+    ],
+    "sample": null,
+    "sourceType": "Course-derived / paraphrased"
+  },
+  {
     "id": "process-creation",
     "unit": "24",
     "title": "Process creation",
@@ -86,6 +359,105 @@
       "cloexec"
     ],
     "sample": "exec_demo.c"
+  },
+  {
+    "id": "files-directories",
+    "unit": "39",
+    "title": "Files and directories",
+    "eyebrow": "Open files, offsets, links and directory trees",
+    "source": "file-intro.md",
+    "refs": [
+      "39.1",
+      "39.2",
+      "39.4",
+      "39.5",
+      "39.6",
+      "39.9",
+      "39.14",
+      "39.15"
+    ],
+    "objective": "Explain file descriptors and how independent names can identify the same file.",
+    "concept": "An inode-like file object stores metadata and data-block pointers, while a directory maps names to objects. An open file descriptor indexes a process table; duplicated descriptors can share a single open-file description and its offset.",
+    "example": "After reading 4 bytes through fd 3, a duplicated fd 4 may read from offset 4, not offset 0.",
+    "prediction": "If fd 4 is made by dup(fd 3), does each descriptor have a separate file offset?",
+    "answer": "No. They refer to the same open-file description and share the file offset.",
+    "lab": "Open, read and duplicate a file descriptor, then inspect its shared cursor.",
+    "takeaways": [
+      "Pathnames name files; they are not the file contents.",
+      "dup() shares underlying open-file state, including offset.",
+      "Hard links share an inode; symbolic links store another path. "
+    ],
+    "challengeIds": [
+      "files-directories-a",
+      "files-directories-b"
+    ],
+    "sample": null,
+    "sourceType": "Course-derived / paraphrased"
+  },
+  {
+    "id": "file-system-implementation",
+    "unit": "40",
+    "title": "File-system implementation",
+    "eyebrow": "Inodes, directories, bitmaps and access paths",
+    "source": "file-implementation.md",
+    "refs": [
+      "40.1",
+      "40.2",
+      "40.3",
+      "40.4",
+      "40.5",
+      "40.6",
+      "40.7"
+    ],
+    "objective": "Explain how a simple file system connects file names, inodes and blocks.",
+    "concept": "A basic UNIX-style file system tracks allocation in bitmaps, stores file metadata in inode records and file contents in data blocks. Directories map names to inode numbers, while cached metadata reduces repeated disk reads.",
+    "example": "Opening a pathname requires looking up directory entries and metadata; reading bytes then locates the file's data blocks.",
+    "prediction": "Is a directory entry itself usually the full file contents?",
+    "answer": "No. It typically maps a name to a file identifier; inode and data blocks carry metadata and content.",
+    "lab": "Allocate an inode and a data block, link them through a directory and simulate a read.",
+    "takeaways": [
+      "Inodes represent file metadata and pointers.",
+      "Directories translate names to inode identifiers.",
+      "Block and inode allocation require separate free-space tracking."
+    ],
+    "challengeIds": [
+      "file-system-implementation-a",
+      "file-system-implementation-b"
+    ],
+    "sample": null,
+    "sourceType": "Course-derived / paraphrased"
+  },
+  {
+    "id": "fast-file-system",
+    "unit": "41",
+    "title": "Fast File System and locality",
+    "eyebrow": "Cylinder groups, locality and large files",
+    "source": "file-ffs.md",
+    "refs": [
+      "41.1",
+      "41.2",
+      "41.3",
+      "41.4",
+      "41.5",
+      "41.6"
+    ],
+    "objective": "Reason about minimizing mechanical seek cost through locality-aware placement.",
+    "concept": "The classic Fast File System places nearby file metadata and data in related cylinder groups to reduce seeks and preserve locality. Large files can be distributed across groups to avoid exhausting a single area; this is a classic disk design, not a modern SSD performance model.",
+    "example": "Placing a directory's files near their inodes can reduce head movement on spinning disks compared with scattering blocks.",
+    "prediction": "Why might FFS deliberately distribute a very large file across multiple groups?",
+    "answer": "To preserve allocation balance and avoid monopolizing the local group while retaining useful locality.",
+    "lab": "Compare an illustrative scattered block layout with a grouped locality layout.",
+    "takeaways": [
+      "Classic FFS uses groups to improve placement locality.",
+      "Keeping related inodes and blocks nearby lowers mechanical access overhead.",
+      "Large-file policies balance locality with free-space availability."
+    ],
+    "challengeIds": [
+      "fast-file-system-a",
+      "fast-file-system-b"
+    ],
+    "sample": null,
+    "sourceType": "Course-derived / paraphrased"
   },
   {
     "id": "sysv-semaphores",
