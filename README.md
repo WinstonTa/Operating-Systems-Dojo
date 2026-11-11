@@ -1,11 +1,11 @@
 # Operating Systems Dojo
 
-**Interactive Linux process and IPC learning lab.** Covers all seven approved chapters from the TaskBoard OperatingSystemsDojo references, with a pedagogical flow of **Understand → See → Predict → Try → Explain → Practice → Revisit**.
+**Interactive operating systems learning lab.** Covers all nineteen supplied chapters from the TaskBoard OperatingSystemsDojo references, with a pedagogical flow of **Understand → See → Predict → Try → Explain → Practice → Revisit**.
 
 ## Features
-- Seven chapter-aligned courses: process creation (24), termination (25), execution (27), System V semaphores (47), System V shared memory (48), POSIX semaphores (53), POSIX shared memory (54).
+- Nineteen chapter lessons: nine virtual-memory topics (13, 15–22), three file-system topics (39–41), and seven Linux process/IPC chapters (24, 25, 27, 47, 48, 53, 54).
 - Browser-only deterministic teaching simulations with event traces and state inspectors. **These are not actual kernel system calls.**
-- Fourteen authored multiple-choice knowledge checks with hints and explanatory feedback; progress saved to browser `localStorage`.
+- Thirty-eight authored multiple-choice knowledge checks with hints and explanatory feedback; progress saved to browser `localStorage`.
 - Seven original Linux C examples, plus compilation and execution instructions in [examples/README.md](examples/README.md).
 - Responsive navigation, chapter search, source attribution, no login or telemetry backend.
 
@@ -40,7 +40,7 @@ npm run preview
 See [PROJECT_BRIEF.md](PROJECT_BRIEF.md) and [CONTENT_MAP.md](CONTENT_MAP.md). Source material lives at TaskBoard `tasks_OperatingSystemsDojo`. We paraphrase and build new visual representations; textbook figure text was available as OCR-like content in some chapters but original image assets were not. No copyrighted source chapters are copied into this app. This app is for learning, not an exhaustive Linux/POSIX specification.
 
 ## Deploy
-Import `WinstonTa/Operating-Systems-Dojo` into Vercel using the Vite framework, build `npm run build`, output `dist`. `vercel.json` provides a SPA rewrite. No API keys or backend are needed. Deploy from reviewed `main` after merging the PR. Browser localStorage progress is per-origin, per-browser.
+Import `WinstonTa/Operating-Systems-Dojo` into Vercel using the Vite framework, build `npm run build`, output `dist`. `vercel.json` provides a SPA rewrite. No API keys or backend are needed. Deploy directly from `main` during rapid development. Browser localStorage progress is per-origin, per-browser.
 
 ## Verification status
-GitHub Actions has separate web validation/typecheck/build and strict Linux C compilation jobs. Their actual run statuses should be checked before merging. CLI checks cannot substitute for a browser accessibility or Vercel preview smoke test.
+GitHub Actions has separate web validation/typecheck/build and strict Linux C compilation jobs. The frontend and 19 state-machine scenarios are checked on each push. Their actual run statuses should be checked before merging. CLI checks cannot substitute for a browser accessibility or Vercel preview smoke test.
